@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: awsparamstore
+  cloud:
+    enabled: true
+    config:
+      server:
+        awsparamstore:
+          enabled: true
+          region: ap-northeast-2
+  application:
+    name: config-server
+
+eureka:
+  instance:
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
