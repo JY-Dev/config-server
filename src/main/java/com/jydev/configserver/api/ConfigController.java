@@ -1,5 +1,6 @@
-package com.jydev.configserver;
+package com.jydev.configserver.api;
 
+import com.jydev.configserver.external.api.actuator.ActuatorService;
 import com.jydev.configserver.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,15 +28,18 @@ public class ConfigController {
 
     private final DiscoveryClient discoveryClient;
 
+    private final ActuatorService actuatorService;
 
     @PostMapping("/{profile}")
-    public List<String> refreshConfig(@PathVariable String profile) {
-        return discoveryClient.getServices()
+    public void refreshConfig(@PathVariable String profile) {
+        List<String> urls = discoveryClient.getServices()
                 .stream()
                 .flatMap(serviceId -> discoveryClient.getInstances(serviceId).stream())
                 .filter(instance -> !isConfigServer(instance.getServiceId()) && isAllowAllProfile(profile) || extractActiveProfiles(instance).contains(profile))
                 .map(instance -> instance.getUri().toString())
                 .toList();
+
+        actuatorService.callRefresh(urls);
     }
 
     private boolean isConfigServer(String serviceId){

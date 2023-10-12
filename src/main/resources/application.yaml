@@ -11,8 +11,10 @@ spring:
         awsparamstore:
           enabled: true
           region: ap-northeast-2
+          profile-separator: _
   application:
     name: config-server
+
 
 eureka:
   instance:
@@ -20,3 +22,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+logging:
+  level:
+    okhttp3: DEBUG
